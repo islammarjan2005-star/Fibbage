@@ -1,0 +1,18 @@
+{
+  "name": "fibbage-clone",
+  "version": "1.0.0",
+  "description": "A clone of the popular party game Fibbage by Jackbox Games",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["fibbage", "party-game", "multiplayer", "trivia"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "uuid": "^9.0.0"
+  }
+}

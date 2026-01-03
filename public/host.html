@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fibbage - Host Screen</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/host.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="host-page">
+    <div id="game-container">
+        <!-- Lobby Screen -->
+        <div id="lobby-screen" class="screen active">
+            <div class="lobby-header">
+                <h1 class="game-logo">
+                    <span class="title-fib">FIB</span><span class="title-bage">BAGE</span>
+                </h1>
+            </div>
+
+            <div class="lobby-content">
+                <div class="room-code-section">
+                    <p class="join-text">Join at <span class="url">this device's IP:3000/play</span></p>
+                    <div class="room-code" id="room-code">----</div>
+                    <p class="room-code-label">Room Code</p>
+                </div>
+
+                <div class="players-section">
+                    <h2>Players (<span id="player-count">0</span>/8)</h2>
+                    <div class="players-grid" id="players-grid">
+                        <!-- Players will be added here -->
+                        <div class="empty-slot">Waiting for players...</div>
+                    </div>
+                </div>
+
+                <button id="start-game-btn" class="btn btn-primary btn-huge" disabled>
+                    Need 2+ Players to Start
+                </button>
+            </div>
+        </div>
+
+        <!-- Question Screen (Writing Phase) -->
+        <div id="writing-screen" class="screen">
+            <div class="game-header">
+                <div class="round-info">
+                    Round <span id="current-round">1</span> of <span id="total-rounds">5</span>
+                </div>
+                <div class="timer-container">
+                    <div class="timer" id="writing-timer">60</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="category-badge" id="question-category">Category</div>
+                <div class="question-text" id="question-text">
+                    Loading question...
+                </div>
+            </div>
+
+            <div class="submission-status">
+                <h3>Lies Submitted</h3>
+                <div class="submission-grid" id="submission-grid">
+                    <!-- Player submission status will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Voting Screen -->
+        <div id="voting-screen" class="screen">
+            <div class="game-header">
+                <div class="phase-label">PICK THE TRUTH!</div>
+                <div class="timer-container">
+                    <div class="timer" id="voting-timer">30</div>
+                </div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-text" id="voting-question-text">
+                    Loading question...
+                </div>
+            </div>
+
+            <div class="answers-container" id="answers-container">
+                <!-- Answers will be displayed here -->
+            </div>
+
+            <div class="votes-status">
+                <span id="votes-count">0</span> / <span id="votes-total">0</span> votes in
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="results-header">
+                <h2>The Truth Was...</h2>
+            </div>
+
+            <div class="truth-reveal">
+                <div class="truth-answer" id="truth-answer">Answer</div>
+            </div>
+
+            <div class="results-breakdown" id="results-breakdown">
+                <!-- Results will be shown here -->
+            </div>
+        </div>
+
+        <!-- Scoreboard Screen -->
+        <div id="scoreboard-screen" class="screen">
+            <div class="scoreboard-header">
+                <h2>Scoreboard</h2>
+                <div class="round-progress">
+                    After Round <span id="score-round">1</span>
+                </div>
+            </div>
+
+            <div class="scoreboard-container" id="scoreboard-container">
+                <!-- Scores will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameover-screen" class="screen">
+            <div class="gameover-header">
+                <div class="confetti"></div>
+                <h1>Game Over!</h1>
+            </div>
+
+            <div class="winner-section">
+                <div class="winner-crown">👑</div>
+                <div class="winner-avatar" id="winner-avatar">😀</div>
+                <h2 class="winner-name" id="winner-name">Winner</h2>
+                <div class="winner-score" id="winner-score">0 pts</div>
+            </div>
+
+            <div class="final-scores" id="final-scores">
+                <!-- Final scores will be displayed here -->
+            </div>
+
+            <button id="play-again-btn" class="btn btn-primary btn-large">
+                Play Again
+            </button>
+        </div>
+    </div>
+
+    <!-- Audio elements -->
+    <audio id="sound-join" src="/sounds/join.mp3" preload="auto"></audio>
+    <audio id="sound-tick" src="/sounds/tick.mp3" preload="auto"></audio>
+    <audio id="sound-submit" src="/sounds/submit.mp3" preload="auto"></audio>
+    <audio id="sound-reveal" src="/sounds/reveal.mp3" preload="auto"></audio>
+    <audio id="sound-correct" src="/sounds/correct.mp3" preload="auto"></audio>
+    <audio id="sound-wrong" src="/sounds/wrong.mp3" preload="auto"></audio>
+    <audio id="sound-winner" src="/sounds/winner.mp3" preload="auto"></audio>
+    <audio id="sound-music" src="/sounds/music.mp3" preload="auto" loop></audio>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/host.js"></script>
+</body>
+</html>

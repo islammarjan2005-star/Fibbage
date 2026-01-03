@@ -1,0 +1,693 @@
+/* ============================================
+   FIBBAGE CLONE - Host Screen Styles
+   ============================================ */
+
+.host-page {
+    min-height: 100vh;
+    background: var(--gradient-bg);
+}
+
+#game-container {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================
+   Lobby Screen
+   ============================================ */
+
+#lobby-screen {
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.lobby-header {
+    margin-bottom: var(--spacing-xxl);
+}
+
+.lobby-header .game-logo {
+    font-size: 6rem;
+    animation: glow 2s ease-in-out infinite;
+}
+
+.lobby-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-xl);
+    max-width: 900px;
+    width: 100%;
+}
+
+.room-code-section {
+    background: var(--bg-card);
+    padding: var(--spacing-xl) var(--spacing-xxl);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+}
+
+.join-text {
+    font-size: var(--font-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.join-text .url {
+    color: var(--secondary);
+    font-weight: 600;
+}
+
+.room-code {
+    font-family: 'Bangers', cursive;
+    font-size: 8rem;
+    letter-spacing: 20px;
+    color: var(--primary);
+    text-shadow: 4px 4px 0 var(--bg-darker);
+    line-height: 1;
+}
+
+.room-code-label {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-top: var(--spacing-sm);
+}
+
+.players-section {
+    width: 100%;
+}
+
+.players-section h2 {
+    font-size: var(--font-xl);
+    margin-bottom: var(--spacing-lg);
+    color: var(--text-secondary);
+}
+
+.players-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-md);
+    min-height: 100px;
+}
+
+.player-card {
+    background: var(--bg-card);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    animation: slideInUp 0.3s ease;
+}
+
+.player-card .avatar {
+    font-size: 2.5rem;
+}
+
+.player-card .name {
+    font-size: var(--font-lg);
+    font-weight: 600;
+}
+
+.empty-slot {
+    color: var(--text-muted);
+    font-style: italic;
+    padding: var(--spacing-lg);
+}
+
+/* ============================================
+   Game Header
+   ============================================ */
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-lg) var(--spacing-xl);
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.round-info {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-2xl);
+    color: var(--primary-light);
+}
+
+.timer-container {
+    background: var(--bg-card);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    min-width: 100px;
+    text-align: center;
+}
+
+.phase-label {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-3xl);
+    color: var(--secondary);
+    text-shadow: 2px 2px 0 var(--bg-darker);
+}
+
+/* ============================================
+   Question Container
+   ============================================ */
+
+.question-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-xxl);
+    text-align: center;
+}
+
+.category-badge {
+    background: var(--gradient-accent);
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--radius-xl);
+    font-size: var(--font-sm);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: var(--spacing-xl);
+}
+
+.question-text {
+    font-size: var(--font-3xl);
+    font-weight: 700;
+    max-width: 900px;
+    line-height: 1.4;
+    color: var(--text-primary);
+}
+
+/* ============================================
+   Submission Status
+   ============================================ */
+
+.submission-status {
+    padding: var(--spacing-xl);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.submission-status h3 {
+    text-align: center;
+    font-size: var(--font-lg);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-lg);
+}
+
+.submission-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.submission-item {
+    background: var(--bg-card);
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all var(--transition-normal);
+}
+
+.submission-item .avatar {
+    font-size: 1.5rem;
+}
+
+.submission-item .name {
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+}
+
+.submission-item .status-icon {
+    font-size: var(--font-lg);
+    opacity: 0.3;
+}
+
+.submission-item.submitted {
+    background: rgba(0, 184, 148, 0.2);
+    border: 2px solid var(--success);
+}
+
+.submission-item.submitted .status-icon {
+    opacity: 1;
+    color: var(--success);
+}
+
+/* ============================================
+   Voting Screen
+   ============================================ */
+
+#voting-screen {
+    padding: 0;
+}
+
+#voting-screen .question-container {
+    flex: 0;
+    padding: var(--spacing-xl);
+}
+
+#voting-screen .question-text {
+    font-size: var(--font-2xl);
+}
+
+.answers-container {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-lg);
+    padding: var(--spacing-xl);
+    max-width: 1200px;
+    margin: 0 auto;
+    align-content: center;
+}
+
+.answer-card {
+    background: var(--bg-card);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-md);
+    text-align: center;
+    font-size: var(--font-xl);
+    font-weight: 600;
+    transition: all var(--transition-normal);
+    animation: scaleIn 0.3s ease;
+    animation-fill-mode: both;
+}
+
+.answer-card:nth-child(1) { animation-delay: 0.1s; }
+.answer-card:nth-child(2) { animation-delay: 0.2s; }
+.answer-card:nth-child(3) { animation-delay: 0.3s; }
+.answer-card:nth-child(4) { animation-delay: 0.4s; }
+.answer-card:nth-child(5) { animation-delay: 0.5s; }
+.answer-card:nth-child(6) { animation-delay: 0.6s; }
+.answer-card:nth-child(7) { animation-delay: 0.7s; }
+.answer-card:nth-child(8) { animation-delay: 0.8s; }
+
+.votes-status {
+    text-align: center;
+    padding: var(--spacing-lg);
+    font-size: var(--font-lg);
+    color: var(--text-secondary);
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   Results Screen
+   ============================================ */
+
+#results-screen {
+    padding: var(--spacing-xl);
+    align-items: center;
+}
+
+.results-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.results-header h2 {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-3xl);
+    color: var(--text-secondary);
+}
+
+.truth-reveal {
+    margin-bottom: var(--spacing-xxl);
+    animation: scaleIn 0.5s ease;
+}
+
+.truth-answer {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-4xl);
+    color: var(--success);
+    text-shadow: 3px 3px 0 var(--bg-darker);
+    background: rgba(0, 184, 148, 0.1);
+    padding: var(--spacing-lg) var(--spacing-xxl);
+    border-radius: var(--radius-lg);
+    border: 3px solid var(--success);
+}
+
+.results-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--spacing-lg);
+    max-width: 1200px;
+    width: 100%;
+}
+
+.result-card {
+    background: var(--bg-card);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    animation: slideInUp 0.3s ease;
+    animation-fill-mode: both;
+}
+
+.result-card.truth {
+    border: 2px solid var(--success);
+    background: rgba(0, 184, 148, 0.1);
+}
+
+.result-card.lie {
+    border: 2px solid var(--accent);
+}
+
+.result-answer {
+    font-size: var(--font-xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+}
+
+.result-label {
+    font-size: var(--font-sm);
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.result-author {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-sm);
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-md);
+}
+
+.result-author .avatar {
+    font-size: 1.5rem;
+}
+
+.result-voters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs);
+    margin-top: var(--spacing-sm);
+}
+
+.voter-chip {
+    background: rgba(255, 255, 255, 0.1);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-sm);
+    font-size: var(--font-xs);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+}
+
+.voter-chip.correct {
+    background: rgba(0, 184, 148, 0.2);
+    color: var(--success);
+}
+
+.voter-chip.fooled {
+    background: rgba(253, 121, 168, 0.2);
+    color: var(--accent);
+}
+
+.points-earned {
+    font-size: var(--font-lg);
+    font-weight: 700;
+    color: var(--warning);
+    margin-top: var(--spacing-sm);
+}
+
+/* ============================================
+   Scoreboard Screen
+   ============================================ */
+
+#scoreboard-screen {
+    padding: var(--spacing-xl);
+    align-items: center;
+}
+
+.scoreboard-header {
+    text-align: center;
+    margin-bottom: var(--spacing-xl);
+}
+
+.scoreboard-header h2 {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-4xl);
+    color: var(--primary-light);
+}
+
+.round-progress {
+    font-size: var(--font-lg);
+    color: var(--text-secondary);
+    margin-top: var(--spacing-sm);
+}
+
+.scoreboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    max-width: 600px;
+    width: 100%;
+}
+
+.score-row {
+    display: flex;
+    align-items: center;
+    background: var(--bg-card);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    animation: slideInUp 0.3s ease;
+    animation-fill-mode: both;
+}
+
+.score-row:nth-child(1) {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.1));
+    border: 2px solid gold;
+    animation-delay: 0.1s;
+}
+
+.score-row:nth-child(2) {
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(158, 158, 158, 0.1));
+    border: 2px solid silver;
+    animation-delay: 0.2s;
+}
+
+.score-row:nth-child(3) {
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(139, 90, 43, 0.1));
+    border: 2px solid #cd7f32;
+    animation-delay: 0.3s;
+}
+
+.score-row:nth-child(n+4) {
+    animation-delay: calc(0.1s * var(--index, 4));
+}
+
+.score-position {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-2xl);
+    width: 50px;
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.score-row:nth-child(1) .score-position { color: gold; }
+.score-row:nth-child(2) .score-position { color: silver; }
+.score-row:nth-child(3) .score-position { color: #cd7f32; }
+
+.score-player {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.score-player .avatar {
+    font-size: 2rem;
+}
+
+.score-player .name {
+    font-size: var(--font-lg);
+    font-weight: 600;
+}
+
+.score-value {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-2xl);
+    color: var(--warning);
+}
+
+/* ============================================
+   Game Over Screen
+   ============================================ */
+
+#gameover-screen {
+    padding: var(--spacing-xl);
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.gameover-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.gameover-header h1 {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-5xl);
+    color: var(--primary-light);
+    text-shadow: 4px 4px 0 var(--bg-darker);
+    animation: bounce 1s ease infinite;
+}
+
+.winner-section {
+    margin-bottom: var(--spacing-xxl);
+}
+
+.winner-crown {
+    font-size: 5rem;
+    animation: bounce 1s ease infinite;
+}
+
+.winner-avatar {
+    font-size: 6rem;
+    margin: var(--spacing-md) 0;
+    animation: scaleIn 0.5s ease;
+}
+
+.winner-name {
+    font-family: 'Bangers', cursive;
+    font-size: var(--font-4xl);
+    color: var(--warning);
+    margin-bottom: var(--spacing-sm);
+}
+
+.winner-score {
+    font-size: var(--font-2xl);
+    color: var(--text-secondary);
+}
+
+.final-scores {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xxl);
+    max-width: 500px;
+    width: 100%;
+}
+
+.final-score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    background: var(--bg-card);
+    border-radius: var(--radius-sm);
+}
+
+.final-score-row .position {
+    font-weight: 700;
+    color: var(--text-secondary);
+    width: 30px;
+}
+
+.final-score-row .player-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.final-score-row .score {
+    font-weight: 700;
+    color: var(--warning);
+}
+
+/* Confetti Animation */
+.confetti {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.confetti::before,
+.confetti::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle, var(--primary) 2px, transparent 2px),
+        radial-gradient(circle, var(--secondary) 2px, transparent 2px),
+        radial-gradient(circle, var(--accent) 2px, transparent 2px),
+        radial-gradient(circle, var(--warning) 2px, transparent 2px);
+    background-size: 50px 50px, 70px 70px, 60px 60px, 80px 80px;
+    animation: confettiFall 5s linear infinite;
+}
+
+.confetti::after {
+    animation-delay: 2.5s;
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+/* ============================================
+   Responsive Adjustments
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .room-code {
+        font-size: 6rem;
+        letter-spacing: 15px;
+    }
+
+    .question-text {
+        font-size: var(--font-2xl);
+    }
+
+    .answers-container {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .lobby-header .game-logo {
+        font-size: 4rem;
+    }
+
+    .room-code {
+        font-size: 4rem;
+        letter-spacing: 10px;
+    }
+
+    .question-text {
+        font-size: var(--font-xl);
+    }
+
+    .truth-answer {
+        font-size: var(--font-2xl);
+    }
+
+    .answers-container {
+        grid-template-columns: 1fr;
+    }
+}
