@@ -1,0 +1,1634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fibbage Clone - The Bluffing Party Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================
+           CSS Variables & Reset
+           ============================================ */
+        :root {
+            --primary: #6c5ce7;
+            --primary-dark: #5b4cdb;
+            --primary-light: #a29bfe;
+            --secondary: #00cec9;
+            --secondary-dark: #00b5b0;
+            --accent: #fd79a8;
+            --accent-dark: #e84393;
+            --success: #00b894;
+            --warning: #fdcb6e;
+            --danger: #d63031;
+            --bg-dark: #1a1a2e;
+            --bg-darker: #0f0f1a;
+            --bg-card: #252540;
+            --bg-card-hover: #2d2d4a;
+            --text-primary: #ffffff;
+            --text-secondary: #b2b2b2;
+            --text-muted: #6c6c6c;
+            --gradient-primary: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            --gradient-secondary: linear-gradient(135deg, #00cec9 0%, #81ecec 100%);
+            --gradient-accent: linear-gradient(135deg, #fd79a8 0%, #fab1a0 100%);
+            --gradient-bg: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+            --radius-md: 12px;
+            --radius-lg: 20px;
+            --radius-xl: 30px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gradient-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* ============================================
+           Game Container
+           ============================================ */
+        #game {
+            width: 100%;
+            max-width: 800px;
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           Typography
+           ============================================ */
+        .game-title {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(3rem, 10vw, 5rem);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 4px 4px 0 var(--bg-darker);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .title-fib { color: var(--primary); }
+        .title-bage { color: var(--secondary); }
+
+        .tagline {
+            text-align: center;
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        /* ============================================
+           Buttons
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-lg), 0 0 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(108, 92, 231, 0.5);
+        }
+
+        .btn-primary:disabled {
+            background: var(--bg-card);
+            color: var(--text-muted);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: var(--gradient-secondary);
+            color: var(--bg-dark);
+        }
+
+        .btn-large {
+            padding: 20px 48px;
+            font-size: 1.5rem;
+            border-radius: var(--radius-lg);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .btn-icon {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .btn-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        /* ============================================
+           Form Elements
+           ============================================ */
+        input, textarea {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            font-family: inherit;
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.2);
+        }
+
+        input::placeholder, textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        /* ============================================
+           Cards
+           ============================================ */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ============================================
+           Landing Screen
+           ============================================ */
+        #landing-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 60px;
+        }
+
+        .how-to-play {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .how-to-play h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary-light);
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .step {
+            background: var(--bg-card);
+            padding: 20px;
+            border-radius: var(--radius-md);
+            text-align: left;
+        }
+
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .step h3 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .step p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* ============================================
+           Setup Screen
+           ============================================ */
+        #setup-screen {
+            justify-content: center;
+            align-items: center;
+        }
+
+        .setup-card {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .setup-card h2 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: var(--primary-light);
+        }
+
+        .players-list {
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .player-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-darker);
+            padding: 8px 16px;
+            border-radius: 20px;
+            margin: 4px;
+            font-size: 0.95rem;
+        }
+
+        .player-tag .remove {
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+
+        .player-tag .remove:hover {
+            opacity: 1;
+        }
+
+        .avatar-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .avatar-btn {
+            aspect-ratio: 1;
+            font-size: 1.8rem;
+            background: var(--bg-darker);
+            border: 3px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .avatar-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .avatar-btn.selected {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        .player-count {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        /* ============================================
+           Game Header
+           ============================================ */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-md);
+            margin-bottom: 20px;
+        }
+
+        .round-info {
+            font-family: 'Bangers', cursive;
+            font-size: 1.5rem;
+            color: var(--primary-light);
+        }
+
+        .timer {
+            font-family: 'Bangers', cursive;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            padding: 8px 20px;
+            border-radius: var(--radius-lg);
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .timer.warning { color: var(--warning); }
+        .timer.danger { color: var(--danger); animation: pulse 0.5s ease infinite; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* ============================================
+           Pass Device Screen
+           ============================================ */
+        #pass-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .pass-content {
+            max-width: 400px;
+        }
+
+        .pass-avatar {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            animation: bounce 1s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .pass-name {
+            font-family: 'Bangers', cursive;
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin-bottom: 10px;
+        }
+
+        .pass-instruction {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        /* ============================================
+           Question Screen
+           ============================================ */
+        .category-badge {
+            display: inline-block;
+            background: var(--gradient-accent);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: clamp(1.3rem, 4vw, 2rem);
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .lie-section {
+            margin-top: auto;
+        }
+
+        textarea#lie-input {
+            height: 100px;
+            resize: none;
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* ============================================
+           Voting Screen
+           ============================================ */
+        .voting-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .voting-header h2 {
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+
+        .voting-question {
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+        }
+
+        .choices-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .choice-btn {
+            width: 100%;
+            padding: 20px;
+            background: var(--bg-card);
+            border: 3px solid transparent;
+            border-radius: var(--radius-md);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            text-align: center;
+        }
+
+        .choice-btn:hover:not(:disabled) {
+            background: var(--bg-card-hover);
+            transform: translateX(5px);
+        }
+
+        .choice-btn.selected {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.2);
+        }
+
+        .choice-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .choice-btn .your-lie {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        /* ============================================
+           Results Screen
+           ============================================ */
+        #results-screen {
+            align-items: center;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 {
+            font-family: 'Bangers', cursive;
+            font-size: 2rem;
+            color: var(--text-secondary);
+        }
+
+        .truth-reveal {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .truth-answer {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(1.8rem, 5vw, 3rem);
+            color: var(--success);
+            background: rgba(0, 184, 148, 0.1);
+            padding: 20px 40px;
+            border-radius: var(--radius-lg);
+            border: 3px solid var(--success);
+            display: inline-block;
+        }
+
+        .results-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            border-left: 4px solid var(--accent);
+        }
+
+        .result-card.truth-card {
+            border-left-color: var(--success);
+            background: rgba(0, 184, 148, 0.1);
+        }
+
+        .result-answer {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .result-meta {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .result-voters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .voter-chip {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+        }
+
+        .voter-chip.correct { background: rgba(0, 184, 148, 0.2); color: var(--success); }
+        .voter-chip.fooled { background: rgba(253, 121, 168, 0.2); color: var(--accent); }
+
+        .points-badge {
+            font-weight: 700;
+            color: var(--warning);
+            margin-top: 8px;
+        }
+
+        /* ============================================
+           Scoreboard Screen
+           ============================================ */
+        #scoreboard-screen {
+            align-items: center;
+        }
+
+        .scoreboard-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .scoreboard-header h2 {
+            font-family: 'Bangers', cursive;
+            font-size: 2.5rem;
+            color: var(--primary-light);
+        }
+
+        .scoreboard-list {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .score-row {
+            display: flex;
+            align-items: center;
+            background: var(--bg-card);
+            padding: 16px 20px;
+            border-radius: var(--radius-md);
+            animation: slideIn 0.3s ease backwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .score-row:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 193, 7, 0.1));
+            border: 2px solid gold;
+        }
+
+        .score-row:nth-child(2) {
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.2), rgba(158, 158, 158, 0.1));
+            border: 2px solid silver;
+        }
+
+        .score-row:nth-child(3) {
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.2), rgba(139, 90, 43, 0.1));
+            border: 2px solid #cd7f32;
+        }
+
+        .score-position {
+            font-family: 'Bangers', cursive;
+            font-size: 1.8rem;
+            width: 50px;
+            color: var(--text-secondary);
+        }
+
+        .score-row:nth-child(1) .score-position { color: gold; }
+        .score-row:nth-child(2) .score-position { color: silver; }
+        .score-row:nth-child(3) .score-position { color: #cd7f32; }
+
+        .score-player {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-player .avatar { font-size: 1.8rem; }
+        .score-player .name { font-size: 1.1rem; font-weight: 600; }
+
+        .score-value {
+            font-family: 'Bangers', cursive;
+            font-size: 1.8rem;
+            color: var(--warning);
+        }
+
+        /* ============================================
+           Game Over Screen
+           ============================================ */
+        #gameover-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gameover-header h1 {
+            font-family: 'Bangers', cursive;
+            font-size: clamp(3rem, 10vw, 5rem);
+            color: var(--primary-light);
+            text-shadow: 4px 4px 0 var(--bg-darker);
+            margin-bottom: 30px;
+        }
+
+        .winner-section {
+            margin-bottom: 40px;
+        }
+
+        .winner-crown {
+            font-size: 4rem;
+            animation: bounce 1s ease infinite;
+        }
+
+        .winner-avatar {
+            font-size: 5rem;
+            margin: 15px 0;
+        }
+
+        .winner-name {
+            font-family: 'Bangers', cursive;
+            font-size: 2.5rem;
+            color: var(--warning);
+        }
+
+        .winner-score {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+        }
+
+        .final-standings {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+
+        .final-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            margin: 6px 0;
+            border-radius: var(--radius-md);
+        }
+
+        .confetti {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .confetti span {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            animation: confettiFall 4s linear infinite;
+        }
+
+        @keyframes confettiFall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ============================================
+           Utilities
+           ============================================ */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .mt-20 { margin-top: 20px; }
+        .mb-20 { margin-bottom: 20px; }
+
+        .error-msg {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(214, 48, 49, 0.1);
+            border-radius: var(--radius-md);
+        }
+
+        /* ============================================
+           Responsive
+           ============================================ */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .avatar-grid { grid-template-columns: repeat(4, 1fr); }
+            .steps { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <!-- Landing Screen -->
+        <div id="landing-screen" class="screen active">
+            <h1 class="game-title">
+                <span class="title-fib">FIB</span><span class="title-bage">BAGE</span>
+            </h1>
+            <p class="tagline">The Hilarious Bluffing Party Game</p>
+
+            <div class="button-group">
+                <button class="btn btn-primary btn-large" onclick="showScreen('setup-screen')">
+                    <span class="btn-icon">🎮</span>
+                    <span>Start Game</span>
+                    <span class="btn-subtitle">2-8 Players • Pass & Play</span>
+                </button>
+            </div>
+
+            <div class="how-to-play">
+                <h2>How to Play</h2>
+                <div class="steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <h3>Add Players</h3>
+                        <p>Enter names for 2-8 players</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <h3>Write Lies</h3>
+                        <p>Each player writes a fake answer to a trivia question</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <h3>Find Truth</h3>
+                        <p>Pick the real answer from all the lies</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <h3>Score Points</h3>
+                        <p>+1000 for truth, +500 for fooling others!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="screen">
+            <div class="setup-card card">
+                <h2>Add Players</h2>
+
+                <div class="form-group">
+                    <label>Player Name</label>
+                    <input type="text" id="player-name" maxlength="12" placeholder="Enter name...">
+                </div>
+
+                <div class="form-group">
+                    <label>Choose Avatar</label>
+                    <div class="avatar-grid" id="avatar-grid">
+                        <button class="avatar-btn selected" data-avatar="😀">😀</button>
+                        <button class="avatar-btn" data-avatar="😎">😎</button>
+                        <button class="avatar-btn" data-avatar="🤓">🤓</button>
+                        <button class="avatar-btn" data-avatar="😈">😈</button>
+                        <button class="avatar-btn" data-avatar="🤠">🤠</button>
+                        <button class="avatar-btn" data-avatar="👽">👽</button>
+                        <button class="avatar-btn" data-avatar="🤖">🤖</button>
+                        <button class="avatar-btn" data-avatar="🎃">🎃</button>
+                        <button class="avatar-btn" data-avatar="🦊">🦊</button>
+                        <button class="avatar-btn" data-avatar="🐸">🐸</button>
+                        <button class="avatar-btn" data-avatar="🦄">🦄</button>
+                        <button class="avatar-btn" data-avatar="🐲">🐲</button>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" style="width: 100%;" onclick="addPlayer()">Add Player</button>
+
+                <div id="add-error" class="error-msg hidden"></div>
+
+                <div class="players-list" id="players-list"></div>
+                <p class="player-count"><span id="player-count">0</span>/8 players</p>
+
+                <button class="btn btn-primary mt-20" style="width: 100%;" id="start-game-btn" disabled onclick="startGame()">
+                    Need 2+ Players
+                </button>
+
+                <button class="btn mt-20" style="width: 100%; background: var(--bg-darker);" onclick="showScreen('landing-screen')">
+                    Back
+                </button>
+            </div>
+        </div>
+
+        <!-- Pass Device Screen -->
+        <div id="pass-screen" class="screen">
+            <div class="pass-content">
+                <div class="pass-avatar" id="pass-avatar">😀</div>
+                <div class="pass-name" id="pass-name">Player</div>
+                <p class="pass-instruction" id="pass-instruction">It's your turn!</p>
+                <button class="btn btn-primary btn-large" id="pass-ready-btn">I'm Ready</button>
+            </div>
+        </div>
+
+        <!-- Write Lie Screen -->
+        <div id="write-screen" class="screen">
+            <div class="game-header">
+                <div class="round-info">Round <span id="write-round">1</span>/<span id="write-total">5</span></div>
+                <div class="timer" id="write-timer">60</div>
+            </div>
+
+            <div class="text-center">
+                <span class="category-badge" id="write-category">Category</span>
+            </div>
+
+            <p class="question-text" id="write-question">Loading question...</p>
+
+            <div class="lie-section">
+                <div class="form-group">
+                    <label>Write Your Lie</label>
+                    <textarea id="lie-input" maxlength="80" placeholder="Enter a convincing fake answer..."></textarea>
+                    <div class="char-count"><span id="char-count">0</span>/80</div>
+                </div>
+                <button class="btn btn-primary" style="width: 100%;" onclick="submitLie()">Submit Lie</button>
+                <div id="lie-error" class="error-msg hidden"></div>
+            </div>
+        </div>
+
+        <!-- Vote Screen -->
+        <div id="vote-screen" class="screen">
+            <div class="game-header">
+                <div class="round-info">Vote!</div>
+                <div class="timer" id="vote-timer">30</div>
+            </div>
+
+            <div class="voting-header">
+                <h2>Find the Truth!</h2>
+                <p id="voting-player-name" style="color: var(--secondary);">Player's turn</p>
+            </div>
+
+            <div class="voting-question" id="vote-question">Question here...</div>
+
+            <div class="choices-grid" id="choices-container"></div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="results-screen" class="screen">
+            <div class="results-header">
+                <h2>The Truth Was...</h2>
+            </div>
+
+            <div class="truth-reveal">
+                <div class="truth-answer" id="truth-answer">Answer</div>
+            </div>
+
+            <div class="results-grid" id="results-grid"></div>
+
+            <button class="btn btn-primary mt-20" onclick="continueGame()">Continue</button>
+        </div>
+
+        <!-- Scoreboard Screen -->
+        <div id="scoreboard-screen" class="screen">
+            <div class="scoreboard-header">
+                <h2>Scoreboard</h2>
+                <p style="color: var(--text-secondary);">After Round <span id="score-round">1</span></p>
+            </div>
+
+            <div class="scoreboard-list" id="scoreboard-list"></div>
+
+            <button class="btn btn-primary mt-20" onclick="nextRound()">Next Round</button>
+        </div>
+
+        <!-- Game Over Screen -->
+        <div id="gameover-screen" class="screen">
+            <div class="confetti" id="confetti"></div>
+
+            <div class="gameover-header">
+                <h1>Game Over!</h1>
+            </div>
+
+            <div class="winner-section">
+                <div class="winner-crown">👑</div>
+                <div class="winner-avatar" id="winner-avatar">😀</div>
+                <div class="winner-name" id="winner-name">Winner</div>
+                <div class="winner-score" id="winner-score">0 pts</div>
+            </div>
+
+            <div class="final-standings" id="final-standings"></div>
+
+            <button class="btn btn-primary btn-large" onclick="playAgain()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // FIBBAGE CLONE - Complete Game Logic
+        // ============================================
+
+        // Questions Database
+        const QUESTIONS = [
+            { category: "History", question: "In 1932, Australia lost a war against ___.", answer: "Emus" },
+            { category: "Science", question: "A group of flamingos is called a ___.", answer: "Flamboyance" },
+            { category: "Food", question: "The fear of peanut butter sticking to the roof of your mouth is called ___.", answer: "Arachibutyrophobia" },
+            { category: "Animals", question: "A ___ can sleep for three years.", answer: "Snail" },
+            { category: "History", question: "Cleopatra lived closer in time to the Moon landing than to the building of the ___.", answer: "Great Pyramid" },
+            { category: "Science", question: "Honey never ___.", answer: "Spoils" },
+            { category: "Animals", question: "A group of crows is called a ___.", answer: "Murder" },
+            { category: "History", question: "The Great Fire of London in 1666 destroyed 13,200 houses but only killed ___ people.", answer: "6" },
+            { category: "Geography", question: "There's a town in Norway called ___.", answer: "Hell" },
+            { category: "Animals", question: "Octopuses have ___ hearts.", answer: "Three" },
+            { category: "History", question: "Ancient Egyptians used ___ as a form of currency.", answer: "Beer" },
+            { category: "Science", question: "There are more trees on Earth than ___ in the Milky Way.", answer: "Stars" },
+            { category: "Animals", question: "A shrimp's heart is located in its ___.", answer: "Head" },
+            { category: "Food", question: "Apples float in water because they are ___% air.", answer: "25" },
+            { category: "Science", question: "A day on Venus is longer than a ___ on Venus.", answer: "Year" },
+            { category: "Geography", question: "Russia has a larger surface area than ___.", answer: "Pluto" },
+            { category: "Animals", question: "Cows have best friends and get ___ when separated.", answer: "Stressed" },
+            { category: "Food", question: "Carrots were originally ___.", answer: "Purple" },
+            { category: "Science", question: "Hot water freezes ___ than cold water.", answer: "Faster" },
+            { category: "Geography", question: "The country of ___ has more pyramids than Egypt.", answer: "Sudan" },
+            { category: "Tech", question: "The Twitter bird's official name is ___.", answer: "Larry" },
+            { category: "Animals", question: "Dolphins sleep with one ___ open.", answer: "Eye" },
+            { category: "Food", question: "The world's most expensive coffee comes from beans eaten by ___.", answer: "Civets" },
+            { category: "History", question: "Oxford University is older than the ___ Empire.", answer: "Aztec" },
+            { category: "Science", question: "Bananas are naturally ___.", answer: "Radioactive" },
+            { category: "Pop Culture", question: "The original name for Pac-Man was ___.", answer: "Puck-Man" },
+            { category: "Animals", question: "A group of pugs is called a ___.", answer: "Grumble" },
+            { category: "Food", question: "Ketchup was once sold as ___.", answer: "Medicine" },
+            { category: "History", question: "Nintendo was founded in the year ___.", answer: "1889" },
+            { category: "Animals", question: "The fingerprints of a ___ are nearly identical to humans.", answer: "Koala" },
+            { category: "Food", question: "The inventor of the chocolate chip cookie sold the recipe for a lifetime supply of ___.", answer: "Chocolate" },
+            { category: "Science", question: "A teaspoon of a neutron star would weigh ___ billion tons.", answer: "6" },
+            { category: "Pop Culture", question: "Barbie's full name is Barbara ___ Roberts.", answer: "Millicent" },
+            { category: "Animals", question: "Elephants are the only animals that can't ___.", answer: "Jump" },
+            { category: "Food", question: "The most shoplifted food in the world is ___.", answer: "Cheese" },
+            { category: "History", question: "Forks were once considered ___.", answer: "Sacrilegious" },
+            { category: "Animals", question: "A group of porcupines is called a ___.", answer: "Prickle" },
+            { category: "Food", question: "Cucumbers are ___% water.", answer: "95" },
+            { category: "Science", question: "Humans share ___% of their DNA with bananas.", answer: "50" },
+            { category: "History", question: "The Great Wall of China is held together with ___.", answer: "Sticky rice" },
+            { category: "Animals", question: "A goldfish has a memory span of about ___ months.", answer: "5" },
+            { category: "History", question: "Genghis Khan killed so many people that forests ___.", answer: "Regrew" },
+            { category: "Science", question: "The average cloud weighs ___ million pounds.", answer: "1.1" },
+            { category: "Geography", question: "There is a waterfall in Antarctica that runs ___.", answer: "Red" },
+            { category: "Animals", question: "Sea otters hold ___ while sleeping so they don't drift apart.", answer: "Hands" },
+            { category: "History", question: "The US once planned to nuke the ___.", answer: "Moon" },
+            { category: "Animals", question: "Wombat poop is shaped like ___.", answer: "Cubes" },
+            { category: "Food", question: "The oldest known recipe is for ___.", answer: "Beer" },
+            { category: "Science", question: "Your ___ is the only body part that doesn't heal itself.", answer: "Teeth" },
+            { category: "Animals", question: "A group of owls is called a ___.", answer: "Parliament" },
+            { category: "Food", question: "Peanuts are one of the ingredients of ___.", answer: "Dynamite" },
+            { category: "History", question: "Albert Einstein was offered the presidency of ___.", answer: "Israel" },
+            { category: "Pop Culture", question: "The word 'nerd' was first coined by ___.", answer: "Dr. Seuss" },
+            { category: "Animals", question: "Butterflies taste with their ___.", answer: "Feet" },
+            { category: "Food", question: "Hawaiian pizza was invented in ___.", answer: "Canada" },
+            { category: "History", question: "The first computer programmer was ___.", answer: "Ada Lovelace" },
+            { category: "Animals", question: "A group of jellyfish is called a ___.", answer: "Smack" },
+            { category: "Food", question: "The inventor of the Popsicle was ___ years old.", answer: "11" },
+            { category: "History", question: "Abraham Lincoln was a licensed ___.", answer: "Bartender" },
+            { category: "Geography", question: "Antarctica is the world's largest ___.", answer: "Desert" },
+            { category: "Pop Culture", question: "The word 'robot' comes from a Czech word meaning ___.", answer: "Forced labor" },
+            { category: "Animals", question: "The longest recorded flight of a chicken is ___ seconds.", answer: "13" },
+            { category: "Science", question: "If you fold a paper 42 times, it would reach the ___.", answer: "Moon" },
+            { category: "Geography", question: "The shortest war in history lasted ___ minutes.", answer: "38" },
+            { category: "Pop Culture", question: "The name of the dog on Cracker Jack boxes is ___.", answer: "Bingo" },
+            { category: "Geography", question: "Vatican City has the highest ___ rate in the world.", answer: "Crime" },
+            { category: "Pop Culture", question: "The first TV commercial advertised ___.", answer: "Watches" },
+            { category: "Pop Culture", question: "The hashtag symbol is technically called an ___.", answer: "Octothorpe" },
+            { category: "Geography", question: "More people live in California than in all of ___.", answer: "Canada" },
+            { category: "Pop Culture", question: "The shortest celebrity marriage lasted ___ hours.", answer: "55" }
+        ];
+
+        // Game State
+        let game = {
+            players: [],
+            currentRound: 0,
+            totalRounds: 5,
+            questions: [],
+            currentQuestion: null,
+            currentPlayerIndex: 0,
+            phase: 'setup', // setup, pass-lie, write-lie, pass-vote, vote, results, scoreboard, gameover
+            lies: {},
+            votes: {},
+            timer: null,
+            timeLeft: 0
+        };
+
+        // DOM Elements
+        const screens = {
+            landing: document.getElementById('landing-screen'),
+            setup: document.getElementById('setup-screen'),
+            pass: document.getElementById('pass-screen'),
+            write: document.getElementById('write-screen'),
+            vote: document.getElementById('vote-screen'),
+            results: document.getElementById('results-screen'),
+            scoreboard: document.getElementById('scoreboard-screen'),
+            gameover: document.getElementById('gameover-screen')
+        };
+
+        // ============================================
+        // Utility Functions
+        // ============================================
+
+        function showScreen(screenId) {
+            Object.values(screens).forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+        }
+
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showError(elementId, message) {
+            const el = document.getElementById(elementId);
+            el.textContent = message;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 3000);
+        }
+
+        function startTimer(seconds, displayId, callback) {
+            clearInterval(game.timer);
+            game.timeLeft = seconds;
+            const display = document.getElementById(displayId);
+
+            function updateDisplay() {
+                display.textContent = game.timeLeft;
+                display.classList.remove('warning', 'danger');
+                if (game.timeLeft <= 5) display.classList.add('danger');
+                else if (game.timeLeft <= 10) display.classList.add('warning');
+            }
+
+            updateDisplay();
+
+            game.timer = setInterval(() => {
+                game.timeLeft--;
+                updateDisplay();
+                if (game.timeLeft <= 0) {
+                    clearInterval(game.timer);
+                    callback();
+                }
+            }, 1000);
+        }
+
+        // ============================================
+        // Setup Functions
+        // ============================================
+
+        let selectedAvatar = '😀';
+
+        document.getElementById('avatar-grid').addEventListener('click', (e) => {
+            if (e.target.classList.contains('avatar-btn')) {
+                document.querySelectorAll('.avatar-btn').forEach(b => b.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedAvatar = e.target.dataset.avatar;
+            }
+        });
+
+        document.getElementById('player-name').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') addPlayer();
+        });
+
+        document.getElementById('lie-input').addEventListener('input', (e) => {
+            document.getElementById('char-count').textContent = e.target.value.length;
+        });
+
+        function addPlayer() {
+            const nameInput = document.getElementById('player-name');
+            const name = nameInput.value.trim();
+
+            if (!name) {
+                showError('add-error', 'Please enter a name');
+                return;
+            }
+
+            if (name.length > 12) {
+                showError('add-error', 'Name must be 12 characters or less');
+                return;
+            }
+
+            if (game.players.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                showError('add-error', 'Name already taken');
+                return;
+            }
+
+            if (game.players.length >= 8) {
+                showError('add-error', 'Maximum 8 players');
+                return;
+            }
+
+            game.players.push({
+                name: name,
+                avatar: selectedAvatar,
+                score: 0
+            });
+
+            nameInput.value = '';
+            updatePlayersList();
+        }
+
+        function removePlayer(index) {
+            game.players.splice(index, 1);
+            updatePlayersList();
+        }
+
+        function updatePlayersList() {
+            const list = document.getElementById('players-list');
+            const countEl = document.getElementById('player-count');
+            const startBtn = document.getElementById('start-game-btn');
+
+            list.innerHTML = game.players.map((p, i) => `
+                <span class="player-tag">
+                    ${p.avatar} ${escapeHtml(p.name)}
+                    <span class="remove" onclick="removePlayer(${i})">✕</span>
+                </span>
+            `).join('');
+
+            countEl.textContent = game.players.length;
+
+            if (game.players.length >= 2) {
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Game!';
+            } else {
+                startBtn.disabled = true;
+                startBtn.textContent = `Need ${2 - game.players.length} more player${game.players.length === 1 ? '' : 's'}`;
+            }
+        }
+
+        // ============================================
+        // Game Flow
+        // ============================================
+
+        function startGame() {
+            if (game.players.length < 2) return;
+
+            // Reset game state
+            game.currentRound = 0;
+            game.questions = shuffle(QUESTIONS).slice(0, game.totalRounds);
+            game.players.forEach(p => p.score = 0);
+
+            nextRound();
+        }
+
+        function nextRound() {
+            game.currentRound++;
+
+            if (game.currentRound > game.totalRounds) {
+                showGameOver();
+                return;
+            }
+
+            game.currentQuestion = game.questions[game.currentRound - 1];
+            game.lies = {};
+            game.votes = {};
+            game.currentPlayerIndex = 0;
+
+            startLiePhase();
+        }
+
+        // ============================================
+        // Lie Writing Phase
+        // ============================================
+
+        function startLiePhase() {
+            game.phase = 'pass-lie';
+            showPassScreen('write a lie', () => {
+                showWriteScreen();
+            });
+        }
+
+        function showPassScreen(action, callback) {
+            const player = game.players[game.currentPlayerIndex];
+
+            document.getElementById('pass-avatar').textContent = player.avatar;
+            document.getElementById('pass-name').textContent = player.name;
+            document.getElementById('pass-instruction').textContent = `Pass the device to ${player.name} to ${action}!`;
+
+            const btn = document.getElementById('pass-ready-btn');
+            btn.onclick = callback;
+
+            showScreen('pass-screen');
+        }
+
+        function showWriteScreen() {
+            game.phase = 'write-lie';
+
+            document.getElementById('write-round').textContent = game.currentRound;
+            document.getElementById('write-total').textContent = game.totalRounds;
+            document.getElementById('write-category').textContent = game.currentQuestion.category;
+            document.getElementById('write-question').textContent = game.currentQuestion.question;
+            document.getElementById('lie-input').value = '';
+            document.getElementById('char-count').textContent = '0';
+            document.getElementById('lie-error').classList.add('hidden');
+
+            showScreen('write-screen');
+
+            startTimer(60, 'write-timer', () => {
+                // Auto-submit empty if time runs out
+                const lie = document.getElementById('lie-input').value.trim() || '(No answer)';
+                game.lies[game.currentPlayerIndex] = lie;
+                moveToNextLiePlayer();
+            });
+        }
+
+        function submitLie() {
+            const input = document.getElementById('lie-input');
+            const lie = input.value.trim();
+
+            if (!lie) {
+                showError('lie-error', 'Please enter a lie');
+                return;
+            }
+
+            // Check if matches truth
+            if (lie.toLowerCase() === game.currentQuestion.answer.toLowerCase()) {
+                showError('lie-error', 'That\'s too close to the truth!');
+                return;
+            }
+
+            // Check if matches another lie
+            for (const existingLie of Object.values(game.lies)) {
+                if (lie.toLowerCase() === existingLie.toLowerCase()) {
+                    showError('lie-error', 'Someone already wrote that!');
+                    return;
+                }
+            }
+
+            clearInterval(game.timer);
+            game.lies[game.currentPlayerIndex] = lie;
+            moveToNextLiePlayer();
+        }
+
+        function moveToNextLiePlayer() {
+            game.currentPlayerIndex++;
+
+            if (game.currentPlayerIndex >= game.players.length) {
+                // All lies collected, start voting
+                startVotePhase();
+            } else {
+                showPassScreen('write a lie', () => {
+                    showWriteScreen();
+                });
+            }
+        }
+
+        // ============================================
+        // Voting Phase
+        // ============================================
+
+        function startVotePhase() {
+            game.currentPlayerIndex = 0;
+            game.phase = 'pass-vote';
+            showPassScreen('vote', () => {
+                showVoteScreen();
+            });
+        }
+
+        function showVoteScreen() {
+            game.phase = 'vote';
+            const player = game.players[game.currentPlayerIndex];
+
+            document.getElementById('voting-player-name').textContent = `${player.avatar} ${player.name}'s turn to vote`;
+            document.getElementById('vote-question').textContent = game.currentQuestion.question;
+
+            // Build answer choices
+            let choices = [];
+
+            // Add all lies
+            Object.entries(game.lies).forEach(([idx, lie]) => {
+                choices.push({
+                    id: parseInt(idx),
+                    text: lie,
+                    isLie: true,
+                    authorIndex: parseInt(idx)
+                });
+            });
+
+            // Add truth
+            choices.push({
+                id: 'truth',
+                text: game.currentQuestion.answer,
+                isLie: false
+            });
+
+            // Shuffle
+            choices = shuffle(choices);
+
+            const container = document.getElementById('choices-container');
+            container.innerHTML = choices.map(choice => {
+                const isOwnLie = choice.isLie && choice.authorIndex === game.currentPlayerIndex;
+                return `
+                    <button class="choice-btn ${isOwnLie ? 'disabled' : ''}"
+                            ${isOwnLie ? 'disabled' : ''}
+                            onclick="selectChoice('${choice.id}')">
+                        ${escapeHtml(choice.text)}
+                        ${isOwnLie ? '<span class="your-lie">(Your lie)</span>' : ''}
+                    </button>
+                `;
+            }).join('');
+
+            showScreen('vote-screen');
+
+            startTimer(30, 'vote-timer', () => {
+                // No vote cast, move on
+                game.votes[game.currentPlayerIndex] = null;
+                moveToNextVotePlayer();
+            });
+        }
+
+        function selectChoice(choiceId) {
+            clearInterval(game.timer);
+
+            // Can't vote for own lie
+            if (choiceId == game.currentPlayerIndex) return;
+
+            game.votes[game.currentPlayerIndex] = choiceId;
+
+            // Visual feedback
+            document.querySelectorAll('.choice-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                btn.disabled = true;
+            });
+            event.target.classList.add('selected');
+
+            setTimeout(moveToNextVotePlayer, 500);
+        }
+
+        function moveToNextVotePlayer() {
+            game.currentPlayerIndex++;
+
+            if (game.currentPlayerIndex >= game.players.length) {
+                showResults();
+            } else {
+                showPassScreen('vote', () => {
+                    showVoteScreen();
+                });
+            }
+        }
+
+        // ============================================
+        // Results Phase
+        // ============================================
+
+        function showResults() {
+            game.phase = 'results';
+
+            // Calculate scores
+            const correctVoters = [];
+            const fooledBy = {}; // lieAuthorIndex -> [voterNames]
+
+            Object.entries(game.votes).forEach(([voterIdx, vote]) => {
+                const voter = game.players[parseInt(voterIdx)];
+
+                if (vote === 'truth') {
+                    voter.score += 1000;
+                    correctVoters.push(voter);
+                } else if (vote !== null) {
+                    // Voted for a lie
+                    const lieAuthorIdx = parseInt(vote);
+                    game.players[lieAuthorIdx].score += 500;
+
+                    if (!fooledBy[lieAuthorIdx]) fooledBy[lieAuthorIdx] = [];
+                    fooledBy[lieAuthorIdx].push(voter);
+                }
+            });
+
+            // Display results
+            document.getElementById('truth-answer').textContent = game.currentQuestion.answer;
+
+            let resultsHtml = '';
+
+            // Truth card
+            resultsHtml += `
+                <div class="result-card truth-card">
+                    <div class="result-answer">${escapeHtml(game.currentQuestion.answer)}</div>
+                    <div class="result-meta">THE TRUTH</div>
+                    ${correctVoters.length > 0 ? `
+                        <div class="result-voters">
+                            ${correctVoters.map(v => `<span class="voter-chip correct">${v.avatar} ${escapeHtml(v.name)} +1000</span>`).join('')}
+                        </div>
+                    ` : '<div class="result-meta">Nobody found it!</div>'}
+                </div>
+            `;
+
+            // Lie cards
+            Object.entries(game.lies).forEach(([idx, lie]) => {
+                const author = game.players[parseInt(idx)];
+                const fooled = fooledBy[idx] || [];
+
+                resultsHtml += `
+                    <div class="result-card">
+                        <div class="result-answer">${escapeHtml(lie)}</div>
+                        <div class="result-meta">Written by ${author.avatar} ${escapeHtml(author.name)}</div>
+                        ${fooled.length > 0 ? `
+                            <div class="result-voters">
+                                ${fooled.map(v => `<span class="voter-chip fooled">Fooled ${v.avatar} ${escapeHtml(v.name)}</span>`).join('')}
+                            </div>
+                            <div class="points-badge">+${fooled.length * 500} points!</div>
+                        ` : '<div class="result-meta" style="opacity: 0.5">Fooled nobody</div>'}
+                    </div>
+                `;
+            });
+
+            document.getElementById('results-grid').innerHTML = resultsHtml;
+            showScreen('results-screen');
+        }
+
+        function continueGame() {
+            showScoreboard();
+        }
+
+        // ============================================
+        // Scoreboard
+        // ============================================
+
+        function showScoreboard() {
+            game.phase = 'scoreboard';
+
+            document.getElementById('score-round').textContent = game.currentRound;
+
+            const sorted = [...game.players].sort((a, b) => b.score - a.score);
+
+            document.getElementById('scoreboard-list').innerHTML = sorted.map((player, i) => `
+                <div class="score-row" style="animation-delay: ${i * 0.1}s">
+                    <div class="score-position">#${i + 1}</div>
+                    <div class="score-player">
+                        <span class="avatar">${player.avatar}</span>
+                        <span class="name">${escapeHtml(player.name)}</span>
+                    </div>
+                    <div class="score-value">${player.score.toLocaleString()}</div>
+                </div>
+            `).join('');
+
+            // Change button text for last round
+            const nextBtn = document.querySelector('#scoreboard-screen .btn-primary');
+            if (game.currentRound >= game.totalRounds) {
+                nextBtn.textContent = 'See Final Results';
+            } else {
+                nextBtn.textContent = 'Next Round';
+            }
+
+            showScreen('scoreboard-screen');
+        }
+
+        // ============================================
+        // Game Over
+        // ============================================
+
+        function showGameOver() {
+            game.phase = 'gameover';
+
+            const sorted = [...game.players].sort((a, b) => b.score - a.score);
+            const winner = sorted[0];
+
+            document.getElementById('winner-avatar').textContent = winner.avatar;
+            document.getElementById('winner-name').textContent = winner.name;
+            document.getElementById('winner-score').textContent = `${winner.score.toLocaleString()} pts`;
+
+            document.getElementById('final-standings').innerHTML = sorted.slice(1).map((player, i) => `
+                <div class="final-row">
+                    <span>#${i + 2} ${player.avatar} ${escapeHtml(player.name)}</span>
+                    <span style="color: var(--warning)">${player.score.toLocaleString()}</span>
+                </div>
+            `).join('');
+
+            // Create confetti
+            createConfetti();
+
+            showScreen('gameover-screen');
+        }
+
+        function createConfetti() {
+            const container = document.getElementById('confetti');
+            container.innerHTML = '';
+
+            const colors = ['#6c5ce7', '#00cec9', '#fd79a8', '#fdcb6e', '#00b894'];
+
+            for (let i = 0; i < 50; i++) {
+                const span = document.createElement('span');
+                span.style.left = Math.random() * 100 + '%';
+                span.style.background = colors[Math.floor(Math.random() * colors.length)];
+                span.style.animationDelay = Math.random() * 4 + 's';
+                span.style.animationDuration = (3 + Math.random() * 2) + 's';
+                container.appendChild(span);
+            }
+        }
+
+        function playAgain() {
+            game.players.forEach(p => p.score = 0);
+            showScreen('setup-screen');
+            updatePlayersList();
+        }
+
+        // ============================================
+        // Initialize
+        // ============================================
+
+        // Start on landing screen
+        showScreen('landing-screen');
+    </script>
+</body>
+</html>
